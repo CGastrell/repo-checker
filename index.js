@@ -34,6 +34,7 @@ app.post('/', bodyParser.json(), (req, res/* , next */) => {
       channel: checkOptions.channel
     }
     if (body.total_count && body.total_count > 0) {
+      // res.send(body)
       return announceToSlack(options, (err2, result) => {
         if (err2) {
           console.log('error announcing')
@@ -64,21 +65,36 @@ function announceToSlack (options, callback) {
   const toBe = pullRequests.length > 1 ? 'are' : 'is'
   const prPlural = pullRequests.length > 1 ? 'requests' : 'request'
   const firstLiner = `O hai! There ${toBe} ${pullRequests.length} pull ${prPlural} waiting for code review`
-  const urlList = pullRequests.map(pr => pr.html_url).join('\n')
-  const msgBody = [
-    firstLiner,
-    '\n',
-    urlList
-  ]
+  // const urlList = pullRequests.map(pr => pr.html_url).join('\n')
+  // const msgBody = [
+  //   firstLiner,
+  //   '\n',
+  //   urlList
+  // ].join('\n')
   const payloadObject = {
     channel: options.channel,
-    text: encodeURIComponent(msgBody.join('\n')),
-    username: 'Totoro',
-    icon_url: 'http://dermonutt.com.ar/images/totoro.png'
+    text: encodeURIComponent(firstLiner),
+    username: 'Testing Totoro',
+    icon_url: 'http://dermonutt.com.ar/images/totoro.png',
+    mrkdown: false,
+    attachments: pullRequests.map(pr => {
+      return {
+        fallback: encodeURIComponent(pr.html_url),
+        color: encodeURIComponent('warning'),
+        author_name: encodeURIComponent(pr.user.login),
+        author_icon: encodeURIComponent(pr.user.avatar_url),
+        author_link: encodeURIComponent(pr.user.html_url),
+        text: encodeURIComponent(pr.title),
+        footer: encodeURIComponent('TheEye™ automation services'),
+        title: encodeURIComponent(pr.html_url),
+        title_link: encodeURIComponent(pr.html_url),
+        thumb_url: encodeURIComponent('https://hubspot-leadin-images-prod.s3.amazonaws.com/images/2361929/1476888404091/7e5f02b6-1653-40d5-8928-6627e8d346ac?AWSAccessKeyId=AKIAJUCJXGAA6DE6GLKA&Expires=1792421204&Signature=ZeK1NVlqQAoljg8Dyu6w7XJ8H9I%3D')
+      }
+    })
   }
   const payloadString = JSON.stringify(payloadObject)
   const payload = `payload=${payloadString}`
-  request.post({ url: config.slackWebhookUrl, form: payload }, (err /* , res, body */) => {
+  request.post({ url: config.slackWebhookUrl, form: payload }, (err, res, body) => {
     if (err) {
       return callback(err, 'failure')
     }
