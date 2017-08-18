@@ -1,0 +1,28 @@
+{
+  "name": "githubApi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy-now": "now -e NODE_ENV=production -e GITHUB_API_TOKEN=@github_api_token -e SLACK_WEBHOOK_URL=@slack_webhook_url"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "now-logs": "0.0.7",
+    "request": "^2.79.0"
+  },
+  "now": {
+    "engines": {
+      "node": "6.x.x"
+    }
+  },
+  "devDependencies": {
+    "standard": "^10.0.2"
+  }
+}
